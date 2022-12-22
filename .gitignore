@@ -1,0 +1,7 @@
+*.ipch
+*.suo
+*.VC.db
+*.VC.opendb
+*.swp
+*.un~
+*.*~

@@ -165,6 +165,7 @@
     <ResourceCompile Include="tetris6.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="detris.ico" />
     <Image Include="small.ico" />
     <Image Include="tetris6.ico" />
   </ItemGroup>

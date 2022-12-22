@@ -48,5 +48,8 @@
     <Image Include="tetris6.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="detris.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

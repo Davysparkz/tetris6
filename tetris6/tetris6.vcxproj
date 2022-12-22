@@ -150,7 +150,10 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="tetris6.h" />
+    <ClInclude Include="main.h" />
+    <ClInclude Include="TGraphics.h" />
+    <ClInclude Include="TInput.h" />
+    <ClInclude Include="w32_types.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -159,10 +162,12 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="tetris6.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="TGraphics.cpp" />
+    <ClCompile Include="TInput.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="tetris6.rc" />
+    <ResourceCompile Include="main.rc" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="detris.ico" />

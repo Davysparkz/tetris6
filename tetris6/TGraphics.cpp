@@ -1,10 +1,6 @@
 #include "stdafx.h"
 #include "TGraphics.h"
 
-w32::colorref_t TGraphics::WHITE = RGB(255, 255, 255);
-w32::colorref_t TGraphics::BLACK = RGB(0, 0, 0);
-w32::colorref_t TGraphics::GRAY = RGB(40, 40, 40);
-
 std::wstring TGraphics::FONT_FAMILY = L"Segoe UI";
 int TGraphics::FONT_SIZE = 48;
 TGraphics::FW TGraphics::FONT_WEIGHT;
@@ -56,7 +52,7 @@ void TGraphics::WriteTextW(w32::hdc_t hdc, std::wstring text, int x, int y, w32:
 
 	auto oldColor = SetTextColor(hdc, color);
 
-	w32::rect_t rc;
+	w32::rect_s rc;
 	SetRect(&rc, x, y, 0, 0);
 	DrawTextW(hdc, text.c_str(), -1, &rc, DT_NOCLIP);
 
@@ -72,10 +68,12 @@ void TGraphics::WriteTextA(w32::hdc_t hdc, std::string text, int x, int y, w32::
 
 	auto oldColor = SetTextColor(hdc, color);
 
-	w32::rect_t rc;
+	w32::rect_s rc;
 	SetRect(&rc, x, y, 0, 0);
 	DrawTextA(hdc, text.c_str(), -1, &rc, DT_NOCLIP);
 
 	SetTextColor(hdc, oldColor);
 	SelectObject(hdc, oldFont);
 }
+
+

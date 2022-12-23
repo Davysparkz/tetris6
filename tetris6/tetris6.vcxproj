@@ -147,15 +147,20 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameView.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="TGraphics.h" />
     <ClInclude Include="TInput.h" />
+    <ClInclude Include="TWindow.h" />
     <ClInclude Include="w32_types.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GameView.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -165,6 +170,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TGraphics.cpp" />
     <ClCompile Include="TInput.cpp" />
+    <ClCompile Include="TWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="main.rc" />

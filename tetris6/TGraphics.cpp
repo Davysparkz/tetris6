@@ -20,10 +20,26 @@ TGraphics::~TGraphics()
 {
 }
 
-void TGraphics::DrawRect(w32::hdc_t hdc, int x, int y, int w, int h, w32::colorref_t color) {
-	auto oldBrush = SelectObject(hdc, CreateSolidBrush(color));
-	Rectangle(hdc, x, y, w, h);
-	SelectObject(hdc, oldBrush);
+void TGraphics::DrawRect(w32::hdc_t hdc, int x, int y, int w, int h, bool filled, w32::colorref_t color) {
+	if (filled) {
+		auto oldObj = SelectObject(hdc, CreateSolidBrush(color));
+		Rectangle(hdc, x, y, w, h);
+		SelectObject(hdc, oldObj);
+	}
+	else { // stroked rect
+		// top
+		DrawLine(hdc, x, y, w, y, color);
+
+		// bottom
+		DrawLine(hdc, x, h, w, h, color);
+
+		// left
+		DrawLine(hdc, x, y, x, h, color);
+
+		// right
+		DrawLine(hdc, w, y, w, h, color);
+	}
+
 }
 void TGraphics::DrawLine(w32::hdc_t hdc, int x1, int y1, int x2, int y2, w32::colorref_t color) {
 	auto oldPen = SelectObject(hdc, CreatePen(PS_SOLID, LINE_WIDTH, color));

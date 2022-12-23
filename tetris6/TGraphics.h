@@ -24,7 +24,7 @@ public:
 		ULTRABOLD = EXTRABOLD,
 	};
 
-	static void DrawRect(w32::hdc_t hdc, int x, int y, int w, int h, w32::colorref_t color = WHITE);
+	static void DrawRect(w32::hdc_t hdc, int x, int y, int w, int h, bool filled = true, w32::colorref_t color = WHITE);
 	static void DrawLine(w32::hdc_t hdc, int x1, int y1, int x2, int y2, w32::colorref_t color = WHITE);
 	static void WriteTextW(w32::hdc_t hdc, std::wstring text, int x, int y, w32::colorref_t color = WHITE);
 	static void WriteTextA(w32::hdc_t hdc, std::string text, int x, int y, w32::colorref_t color = WHITE);

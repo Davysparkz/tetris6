@@ -24,4 +24,6 @@ namespace w32 {
 	using hdc_t = HDC;
 	using rect_t = RECT;
 	using colorref_t = COLORREF;
+	using logbrush_t = LOGBRUSH;
+	using hgdiobj_t = HGDIOBJ;
 }

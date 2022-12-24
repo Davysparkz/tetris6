@@ -22,7 +22,15 @@ public:
 	void OnCharKey();
 
 	void CleanUp();
-	
+
+private:
+	void DrawScoreBoard(w32::hdc_t hdc, w32::rect_s bounds, w32::colorref_t color);
+	void DrawGameBoard(w32::hdc_t hdc, w32::rect_s bounds, w32::colorref_t color);
+	void DrawMenu(w32::hdc_t hdc, w32::rect_s bounds);
+	void DrawLineTetris(w32::hdc_t hdc, w32::rect_s bound, w32::colorref_t color);
+	void DrawBoxTetris(w32::hdc_t hdc, w32::rect_s bound, w32::colorref_t color);
+	void DrawLTetris(w32::hdc_t hdc, w32::rect_s bounds, w32::colorref_t color);
+
 private: 
 	//std::unique_ptr<GameObject> m_gameObject;
 };

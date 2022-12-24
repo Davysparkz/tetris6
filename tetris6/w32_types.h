@@ -34,45 +34,14 @@ namespace w32 {
 	using logbrush_s = LOGBRUSH;
 	using minmaxinfo_s = MINMAXINFO;
 
-	enum Styles : dword_t {
-		OVERLAPPED = 0x00000000L,
-		POPUP = 0x80000000L,
-		CHILD = 0x40000000L,
-		MINIMIZE = 0x20000000L,
-		VISIBLE = 0x10000000L,
-		DISABLED = 0x08000000L,
-		CLIPSIBLINGS = 0x04000000L,
-		CLIPCHILDREN = 0x02000000L,
-		MAXIMIZE = 0x01000000L,
-		CAPTION = 0x00C00000L,     /* BORDER | DLGFRAME  */
-		BORDER = 0x00800000L,
-		DLGFRAME = 0x00400000L,
-		VSCROLL = 0x00200000L,
-		HSCROLL = 0x00100000L,
-		SYSMENU = 0x00080000L,
-		THICKFRAME = 0x00040000L,
-		GROUP = 0x00020000L,
-		TABSTOP = 0x00010000L,
-		MINIMIZEBOX = 0x00020000L,
-		MAXIMIZEBOX = 0x00010000L,
-		TILED = OVERLAPPED,
-		ICONIC = MINIMIZE,
-		SIZEBOX = THICKFRAME,
-		OVERLAPPEDWINDOW = (OVERLAPPED | CAPTION | SYSMENU | THICKFRAME | MINIMIZEBOX | MAXIMIZEBOX),
-		POPUPWINDOW = (POPUP | BORDER | SYSMENU),
-		TILEDWINDOW = OVERLAPPEDWINDOW,
-		CHILDWINDOW = CHILD
-	};
+#define WIDEN_RECT(r) r.left, r.top, r.right, r.bottom
 
-	//inline Styles operator | (Styles s1, Styles s2) {
-	//	return static_cast<Styles>(s1) | static_cast<Styles>(s2);
-	//}
-
-	//inline Styles operator ^ (Styles s1, Styles s2) {
-	//	return static_cast<Styles>(s1) ^ static_cast<Styles>(s2);
-	//}
-
-	//inline Styles operator & (Styles s1, Styles s2) {
-	//	return static_cast<Styles>(s1) & static_cast<Styles>(s2);
-	//}
+	static rect_s GetRect(long_t x, long_t y, long_t w, long_t h) {
+		rect_s rc;
+		rc.left = x;
+		rc.top = y;
+		rc.right = w;
+		rc.bottom = h;
+		return rc;
+	}
 }

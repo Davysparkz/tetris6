@@ -155,6 +155,7 @@
     <ClInclude Include="main.h" />
     <ClInclude Include="TGraphics.h" />
     <ClInclude Include="TInput.h" />
+    <ClInclude Include="TMenu.h" />
     <ClInclude Include="TWindow.h" />
     <ClInclude Include="w32_types.h" />
   </ItemGroup>
@@ -170,6 +171,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="TGraphics.cpp" />
     <ClCompile Include="TInput.cpp" />
+    <ClCompile Include="TMenu.cpp" />
     <ClCompile Include="TWindow.cpp" />
   </ItemGroup>
   <ItemGroup>

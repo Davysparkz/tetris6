@@ -245,12 +245,19 @@ public:
 	};
 
 	enum TextAlign {
-		TOP = 0x00000000,
+	//	TOP = 0x00000000, // NOT WORKING
 		LEFT = 0x00000000,
 		CENTER = 0x00000001,
 		RIGHT = 0x00000002,
-		VCENTER = 0x00000004,
-		BOTTOM = 0x00000008,
+	//	VCENTER = 0x00000004, // NOT WORKING
+		//BOTTOM = 0x00000008, // NOT WORKING
+	};
+
+	struct TextProps {
+		w32::colorref_t color{Colors::White};
+		int fontSize{ 16 };
+		std::wstring fontFamily{ L"Segoe UI" };
+		TGraphics::TextAlign align{ TGraphics::TextAlign::LEFT };
 	};
 
 	static void DrawLine(w32::hdc_t hdc, int x1, int y1, int x2, int y2, w32::colorref_t color = Colors::White, LineStyle lineStyle = SOLID, int lineWidth = 3);
@@ -259,7 +266,7 @@ public:
 		std::wstring text,
 		w32::rect_s bounds, 
 		w32::colorref_t color = Colors::White, 
-		int fontSize = 48, 
+		int fontSize = 16, 
 		TextAlign textAlign = TextAlign::LEFT,
 		std::wstring fontFamily = L"Segoe UI"
 	);
@@ -268,12 +275,26 @@ public:
 		std::string text,
 		w32::rect_s bounds,
 		w32::colorref_t color = Colors::White,
-		int fontSize = 48,
+		int fontSize = 16,
 		TextAlign textAlign = TextAlign::LEFT,
 		std::wstring fontFamily = L"Segoe UI"
 	);
+	static void WriteTextW(
+		w32::hdc_t hdc,
+		std::wstring text,
+		w32::rect_s bounds,
+		TextProps textProps
+	);
+	static void WriteTextA(
+		w32::hdc_t hdc,
+		std::string text,
+		w32::rect_s bounds,
+		TextProps textProps
+	);
 	static void DrawStrokedRect(w32::hdc_t, int x, int y, int w, int h, w32::colorref_t color = Colors::White, LineStyle lineStyle = SOLID, int lineWidth = 3);
 	static void DrawFilledRect(w32::hdc_t, int x, int y, int w, int h, w32::colorref_t color = Colors::White);
+	static void DrawStrokedRect(w32::hdc_t, w32::rect_s bounds, w32::colorref_t color = Colors::White, LineStyle lineStyle = SOLID, int lineWidth = 3);
+	static void DrawFilledRect(w32::hdc_t, w32::rect_s bounds, w32::colorref_t color = Colors::White);
 
 	static std::wstring FONT_FAMILY;
 	static int FONT_SIZE;

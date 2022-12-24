@@ -52,6 +52,16 @@ void TGraphics::WriteTextA(w32::hdc_t hdc, std::string text, w32::rect_s bounds,
 	SelectObject(hdc, oldFont);
 }
 
+void TGraphics::WriteTextW(w32::hdc_t hdc, std::wstring text, w32::rect_s bounds, TextProps tp)
+{
+	WriteTextW(hdc, text, bounds, tp.color, tp.fontSize, tp.align, tp.fontFamily);
+}
+
+void TGraphics::WriteTextA(w32::hdc_t hdc, std::string text, w32::rect_s bounds, TextProps tp)
+{
+	WriteTextA(hdc, text, bounds, tp.color, tp.fontSize, tp.align, tp.fontFamily);
+}
+
 void TGraphics::DrawStrokedRect(w32::hdc_t hdc, int x, int y, int w, int h, w32::colorref_t color, LineStyle lineStyle, int lineWidth)
 {
 	// top
@@ -72,6 +82,16 @@ void TGraphics::DrawFilledRect(w32::hdc_t hdc, int x, int y, int w, int h, w32::
 	auto oldBrush = SelectObject(hdc, CreateSolidBrush(color));
 	Rectangle(hdc, x, y, w, h);
 	SelectObject(hdc, oldBrush);
+}
+
+void TGraphics::DrawStrokedRect(w32::hdc_t hdc, w32::rect_s bounds, w32::colorref_t color, LineStyle lineStyle, int lineWidth)
+{
+	DrawStrokedRect(hdc, WIDEN_RECT(bounds), color, lineStyle, lineWidth);
+}
+
+void TGraphics::DrawFilledRect(w32::hdc_t hdc, w32::rect_s bounds, w32::colorref_t color)
+{
+	DrawFilledRect(hdc, WIDEN_RECT(bounds), color);
 }
 
 

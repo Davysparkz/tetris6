@@ -13,7 +13,8 @@ public:
 
 	void SetUp();
 
-	void Draw(w32::hdc_t hdc, w32::rect_s bounds);
+	//void Draw(w32::hwnd_t hWnd, w32::rect_s bounds);
+	void Draw2(w32::hdc_t hdc, w32::rect_s bounds);
 	void Update();
 
 	void OnLeftArrowKey();
@@ -21,9 +22,6 @@ public:
 	void OnDownArrowKey();
 
 	void OnCharKey();
-
-	typedef void (GameView::*OnLeftArrowKeyCb)(void);
-
 
 	void CleanUp();
 

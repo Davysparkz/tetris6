@@ -65,12 +65,22 @@ public:
 		^ Styles::THICKFRAME)
 	) throw (TWindowException);
 
+	template <typename T>
+	void CreateWithData(T* data, Styles styles = static_cast<Styles>(
+		Styles::OVERLAPPED |
+		Styles::CAPTION |
+		Styles::SYSMENU |
+		Styles::THICKFRAME |
+		Styles::MINIMIZEBOX
+		^ Styles::THICKFRAME)
+	) throw (TWindowException);
+
+
 	bool RegClass(wndclassexw_s wcex);
 
 	hwnd_t getHandle() throw (TWindowException);
 
 	void Show() throw (TWindowException);
-
 private:
 	hwnd_t m_hwnd;
 	hinstance_t m_hinstance;
@@ -83,3 +93,44 @@ private:
 	bool m_registered;
 };
 
+template<typename T>
+inline void TWindow::CreateWithData(T * data, Styles styles) throw(TWindowException)
+{
+	if (!this->m_registered) {
+		throw TWindowException("TWindow::Register() must be called before TWindow::CreateWithData");
+	}
+	if (this->m_created) { // preventing creating more than once
+		return;
+	}
+
+	int scrnW = ::GetSystemMetrics(SM_CXSCREEN);
+	int scrnH = ::GetSystemMetrics(SM_CYSCREEN);
+
+	rect_s wndRc{ 0, 0, static_cast<long>(this->m_width), static_cast<long>(this->m_height) };
+
+	int wndW = wndRc.right - wndRc.left;
+	int wndH = wndRc.bottom - wndRc.top;
+
+	int wndX = max(0, (scrnW - wndW) / 2);
+	int wndY = max(0, (scrnH - wndH) / 2);
+
+	hwnd_t hWnd = ::CreateWindowExW(
+		0,
+		this->m_wndClsName.c_str(),
+		this->m_wndTitle.c_str(),
+		styles,
+		wndX,
+		wndY,
+		wndW,
+		wndH,
+		nullptr,
+		nullptr,
+		this->m_hinstance,
+		data
+	);
+
+	if (hWnd) {
+		this->m_hwnd = hWnd;
+		this->m_created = true;
+	}
+}

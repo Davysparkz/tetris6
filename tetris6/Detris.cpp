@@ -40,3 +40,27 @@ void Detris::Draw(hdc_t hdc)
 		color
 	);
 }
+
+bool InLeft(const Detris & d, uint_t left)
+{
+	if (d.cell.X <= left) {
+		return true;
+	}
+	return false;
+}
+
+bool InRight(const Detris & d, uint_t right)
+{
+	if ((d.cell.X+d.cell.Size) >= right) {
+		return true;
+	}
+	return false;
+}
+
+bool InBottom(const Detris & d, uint_t bottom)
+{
+	if ((d.cell.Y + d.cell.Size) >= bottom) {
+		return true;
+	}
+	return false;
+}

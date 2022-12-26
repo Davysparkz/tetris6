@@ -29,6 +29,10 @@ public:
 	void MoveDown();
 
 	void Draw(hdc_t hdc);
+
+	friend bool InLeft(const Detris& d, uint_t left);
+	friend bool InRight(const Detris& d, uint_t right);
+	friend bool InBottom(const Detris& d, uint_t bottom);
 private:
 	DCell cell;
 	colorref_t color;

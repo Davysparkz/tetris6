@@ -2,6 +2,7 @@
 #include "GameView.h"
 #include "GameObject.h"
 #include "TGraphics.h"
+#include "Detris.h"
 
 GameView::GameView()
 {
@@ -15,6 +16,7 @@ GameView::~GameView()
 void GameView::SetUp()
 {
 	//m_gameObject = std::make_unique<GameObject>(); // using default constructor
+	detris = new Detris(GameboardX, GameboardY, Colors::DarkSalmon);
 }
 
 void GameView::Draw(w32::hdc_t hdc, w32::rect_s bounds)
@@ -24,32 +26,223 @@ void GameView::Draw(w32::hdc_t hdc, w32::rect_s bounds)
 	//}
 	// BEFORE GAME STARTS, DRAW MENU
 	// DrawMenu(hdc, bounds); // TODO: REALLY WORK ON THIS FUNCTION
+
 	// WHEN GAME STARTS, DRAW GAME AREA
 
-	int x{ 20 }, y{ 20 }, w{ bounds.right - 20 }, h{ 80 };
 	// Draw Scoreboard
-	DrawScoreBoard(hdc, w32::GetRect(x, y, w, h), Colors::Azure);
-
-	y = 100;
-	h = bounds.bottom - 20;
+	DrawScoreBoard(hdc, 
+		w32::GetRect(ScoreboardX, ScoreboardY, ScoreboardW, ScoreboardH), 
+		Colors::Azure
+	);
 
 	// Draw Gameboard
-	DrawGameBoard(hdc, w32::GetRect(x, y, w, h), Colors::Orange);
+	DrawGameBoard(hdc, 
+		w32::GetRect(GameboardX, GameboardY, GameboardW, GameboardH), 
+		Colors::Orange
+	);
 
-	w = x + 44;
-	h = y + 44;
+	if (detris) {
+		detris->Draw(hdc);
+	}
+
 	// Draw Tetriminoes
-	DrawLineTetris(hdc, w32::GetRect(x, y, w, h), Colors::Coral);
+	// LEFT SIDE
+	//{ // BOX TETRIS
+	//	DCell cell;
+	//	cell.X = GameboardX;
+	//	cell.Y = GameboardY;
 
-	y = y + 88;
-	w = x + 44;
-	h = y + 44;
-	DrawBoxTetris(hdc, w32::GetRect(x, y, w, h), Colors::Lime);
+	//	TGraphics::DrawStrokedRect2(
+	//		hdc,
+	//		cell.X, cell.Y, cell.Size, cell.Size,
+	//		Colors::Aquamarine
+	//	);
+	//	cell.X = GameboardX + cell.Size;
+	//	cell.Y = GameboardY;
 
-	y = y + 132;
-	w = x + 44;
-	h = y + 44;
-	DrawLTetris(hdc, w32::GetRect(x, y, w, h), Colors::MidnightBlue);
+	//	TGraphics::DrawStrokedRect2(
+	//		hdc,
+	//		cell.X, cell.Y, cell.Size, cell.Size,
+	//		Colors::Aquamarine
+	//	);
+	//	cell.X = GameboardX;
+	//	cell.Y = GameboardY + cell.Size;
+
+	//	TGraphics::DrawStrokedRect2(
+	//		hdc,
+	//		cell.X, cell.Y, cell.Size, cell.Size,
+	//		Colors::Aquamarine
+	//	);
+
+	//	cell.X = GameboardX + cell.Size;
+	//	cell.Y = GameboardY + cell.Size;
+
+	//	TGraphics::DrawStrokedRect2(
+	//		hdc,
+	//		cell.X, cell.Y, cell.Size, cell.Size,
+	//		Colors::Aquamarine
+	//	);
+	//}
+
+	//{ // LINE TETRIS
+	//	DCell cell;
+	//	cell.X = GameboardX;
+	//	cell.Y = GameboardY + 3*cell.Size;
+
+	//	TGraphics::DrawStrokedRect2(
+	//		hdc,
+	//		cell.X, cell.Y, cell.Size, cell.Size,
+	//		Colors::MediumBlue
+	//	);
+	//	
+	//	cell.X = GameboardX + cell.Size;
+	//	cell.Y = GameboardY + 3 * cell.Size;
+
+	//	TGraphics::DrawStrokedRect2(
+	//		hdc,
+	//		cell.X, cell.Y, cell.Size, cell.Size,
+	//		Colors::MediumBlue
+	//	);
+
+	//	cell.X = GameboardX + 2*cell.Size;
+	//	cell.Y = GameboardY + 3 * cell.Size;
+
+	//	TGraphics::DrawStrokedRect2(
+	//		hdc,
+	//		cell.X, cell.Y, cell.Size, cell.Size,
+	//		Colors::MediumBlue
+	//	);
+
+	//	cell.X = GameboardX + 3*cell.Size;
+	//	cell.Y = GameboardY + 3 * cell.Size;
+
+	//	TGraphics::DrawStrokedRect2(
+	//		hdc,
+	//		cell.X, cell.Y, cell.Size, cell.Size,
+	//		Colors::MediumBlue
+	//	);
+	//}
+
+	//{ // L TETRIS
+	//	DCell cell;
+	//	cell.X = GameboardX;
+	//	cell.Y = GameboardY + 5 * cell.Size;
+
+	//	TGraphics::DrawStrokedRect2(
+	//		hdc,
+	//		cell.X, cell.Y, cell.Size, cell.Size,
+	//		Colors::MediumPurple
+	//	);
+
+	//	cell.X = GameboardX;
+	//	cell.Y = GameboardY + 6 * cell.Size;
+
+	//	TGraphics::DrawStrokedRect2(
+	//		hdc,
+	//		cell.X, cell.Y, cell.Size, cell.Size,
+	//		Colors::MediumPurple
+	//	);
+
+	//	cell.X = GameboardX;
+	//	cell.Y = GameboardY + 7 * cell.Size;
+
+	//	TGraphics::DrawStrokedRect2(
+	//		hdc,
+	//		cell.X, cell.Y, cell.Size, cell.Size,
+	//		Colors::MediumPurple
+	//	);
+
+	//	cell.X = GameboardX + cell.Size;
+	//	cell.Y = GameboardY + 7 * cell.Size;
+
+	//	TGraphics::DrawStrokedRect2(
+	//		hdc,
+	//		cell.X, cell.Y, cell.Size, cell.Size,
+	//		Colors::MediumPurple
+	//	);
+	//}
+
+	//{ // L TETRIS
+	//	DCell cell;
+	//	cell.X = GameboardX + cell.Size;
+	//	cell.Y = GameboardY + 9 * cell.Size;
+
+	//	TGraphics::DrawStrokedRect2(
+	//		hdc,
+	//		cell.X, cell.Y, cell.Size, cell.Size,
+	//		Colors::MediumSeaGreen
+	//	);
+
+	//	cell.X = GameboardX + cell.Size;
+	//	cell.Y = GameboardY + 10 * cell.Size;
+
+	//	TGraphics::DrawStrokedRect2(
+	//		hdc,
+	//		cell.X, cell.Y, cell.Size, cell.Size,
+	//		Colors::MediumSeaGreen
+	//	);
+
+	//	cell.X = GameboardX + cell.Size;
+	//	cell.Y = GameboardY + 11 * cell.Size;
+
+	//	TGraphics::DrawStrokedRect2(
+	//		hdc,
+	//		cell.X, cell.Y, cell.Size, cell.Size,
+	//		Colors::MediumSeaGreen
+	//	);
+
+	//	cell.X = GameboardX;
+	//	cell.Y = GameboardY + 11 * cell.Size;
+
+	//	TGraphics::DrawStrokedRect2(
+	//		hdc,
+	//		cell.X, cell.Y, cell.Size, cell.Size,
+	//		Colors::MediumSeaGreen
+	//	);
+	//}
+
+	//// RIGHT SIDE
+	//{ // S TETRIS
+	//	DCell cell;
+	//	cell.X = GameboardW - cell.Size;
+	//	cell.Y = GameboardY+ 10* cell.Size;
+
+	//	TGraphics::DrawStrokedRect2(
+	//		hdc,
+	//		cell.X, cell.Y, cell.Size, cell.Size,
+	//		Colors::MediumOrchid
+	//	);
+
+	//	cell.X = GameboardW - 2*cell.Size;
+	//	cell.Y = GameboardY + 10 * cell.Size;
+
+	//	TGraphics::DrawStrokedRect2(
+	//		hdc,
+	//		cell.X, cell.Y, cell.Size, cell.Size,
+	//		Colors::MediumOrchid
+	//	);
+
+
+	//	cell.X = GameboardW - 2 * cell.Size;
+	//	cell.Y = GameboardY + 11 * cell.Size;
+
+	//	TGraphics::DrawStrokedRect2(
+	//		hdc,
+	//		cell.X, cell.Y, cell.Size, cell.Size,
+	//		Colors::MediumOrchid
+	//	);
+
+
+	//	cell.X = GameboardW - 3 * cell.Size;
+	//	cell.Y = GameboardY + 11 * cell.Size;
+
+	//	TGraphics::DrawStrokedRect2(
+	//		hdc,
+	//		cell.X, cell.Y, cell.Size, cell.Size,
+	//		Colors::MediumOrchid
+	//	);
+	//}
+
 }
 
 void GameView::Update()
@@ -57,6 +250,7 @@ void GameView::Update()
 	//if (m_gameObject) {
 
 	//}
+
 }
 
 void GameView::OnLeftArrowKey()
@@ -64,6 +258,11 @@ void GameView::OnLeftArrowKey()
 	//if (m_gameObject) {
 
 	//}
+
+	OutputDebugString(L"GameView::OnLeftArrowKey");
+	if (detris) {
+		detris->MoveLeft();
+	}
 }
 
 void GameView::OnRightArrowKey()
@@ -71,6 +270,10 @@ void GameView::OnRightArrowKey()
 	//if (m_gameObject) {
 
 	//}
+	OutputDebugString(L"\nGameView::OnRightArrowKey\n");
+	if (detris) {
+		detris->MoveRight();
+	}
 }
 
 void GameView::OnDownArrowKey()
@@ -78,6 +281,10 @@ void GameView::OnDownArrowKey()
 	//if (m_gameObject) {
 
 	//}
+	OutputDebugString(L"\nGameView::OnDownArrowKey\n");
+	if (detris) {
+		detris->MoveDown();
+	}
 }
 
 void GameView::OnCharKey()
@@ -85,6 +292,7 @@ void GameView::OnCharKey()
 	//if (m_gameObject) {
 
 	//}
+	OutputDebugString(L"\nGameView::OnCharKey\n");
 }
 
 void GameView::CleanUp()
@@ -184,20 +392,20 @@ void GameView::DrawGameBoard(w32::hdc_t hdc, w32::rect_s bounds, w32::colorref_t
 	// DRAW BOARD BOUNDARY
 	TGraphics::DrawStrokedRect(hdc, WIDEN_RECT(bounds), color);
 
-	int x{ bounds.left + 2 };
+	int x{ bounds.left };
 	int sz{ 44 };
 	// DRAW BOARD VERTICAL GRID
 	for (int i = 1; i < 12; i++) {
 		TGraphics::DrawLine(
 			hdc,
 			x,
-			bounds.top, 
-			x, 
+			bounds.top,
+			x,
 			bounds.bottom,
 			Colors::DarkSlateGray,
 			TGraphics::LineStyle::DASH,
 			1
-			);
+		);
 		x += sz;
 	}
 
@@ -351,142 +559,3 @@ void GameView::DrawMenu(w32::hdc_t hdc, w32::rect_s bounds)
 	);
 
 }
-
-void GameView::DrawLineTetris(w32::hdc_t hdc, w32::rect_s bounds, w32::colorref_t color)
-{
-	int x{ bounds.left }, y{ bounds.top }, w{ bounds.right }, h{ bounds.bottom };
-
-	// DRAW FIRST BOX
-	TGraphics::DrawStrokedRect(
-		hdc,
-		w32::GetRect(x, y, w, h),
-		color
-	);
-
-	int diff{ w - x };
-	x = w;
-	w = x + diff;
-	// DRAW SECOND BOX
-	TGraphics::DrawStrokedRect(
-		hdc,
-		w32::GetRect(x, y, w, h),
-		color
-	);
-
-	diff = w - x;
-	x = w;
-	w = x + diff;
-	// DRAW THIRD BOX
-	TGraphics::DrawStrokedRect(
-		hdc,
-		w32::GetRect(x, y, w, h),
-		color
-	);
-
-	diff = w - x;
-	x = w;
-	w = x + diff;
-	// DRAW FOURTH BOX
-	TGraphics::DrawStrokedRect(
-		hdc,
-		w32::GetRect(x, y, w, h),
-		color
-	);
-}
-
-void GameView::DrawBoxTetris(w32::hdc_t hdc, w32::rect_s bounds, w32::colorref_t color)
-{
-	int x{ bounds.left }, y{ bounds.top }, w{ bounds.right }, h{ bounds.bottom };
-	int diffX, diffY;
-
-	// DRAW FIRST BOX
-	TGraphics::DrawStrokedRect(
-		hdc,
-		w32::GetRect(x, y, w, h),
-		color
-	);
-
-
-	diffX =  w - x ;
-	x = w;
-	w = x + diffX;
-	// DRAW SECOND BOX
-	TGraphics::DrawStrokedRect(
-		hdc,
-		w32::GetRect(x, y, w, h),
-		color
-	);
-
-	diffY = h - y;
-	diffX = w - x;
-	y = h;
-	h = y + diffY;
-	x = bounds.left;
-	w = x + diffX;
-	// DRAW THIRD BOX
-	TGraphics::DrawStrokedRect(
-		hdc,
-		w32::GetRect(x, y, w, h),
-		color
-	);
-
-	diffY = h - y;
-	diffX = w - x;
-	x = w;
-	w = x + diffX;
-	// DRAW FOURTH BOX
-	TGraphics::DrawStrokedRect(
-		hdc,
-		w32::GetRect(x, y, w, h),
-		color
-	);
-}
-
-void GameView::DrawLTetris(w32::hdc_t hdc, w32::rect_s bounds, w32::colorref_t color)
-{
-	int x{ bounds.left }, y{ bounds.top }, w{ bounds.right }, h{ bounds.bottom };
-	int diffX, diffY;
-
-	// DRAW FIRST BOX
-	TGraphics::DrawStrokedRect(
-		hdc,
-		w32::GetRect(x, y, w, h),
-		color
-	);
-
-	diffY = h - y;
-	diffX = w - x;
-	y = h;
-	h = y + diffY;
-	x = bounds.left;
-	w = x + diffX;
-	// DRAW THIRD BOX
-	TGraphics::DrawStrokedRect(
-		hdc,
-		w32::GetRect(x, y, w, h),
-		color
-	);
-
-	diffY = h - y;
-	diffX = w - x;
-	x = w;
-	w = x + diffX;
-	// DRAW FOURTH BOX
-	TGraphics::DrawStrokedRect(
-		hdc,
-		w32::GetRect(x, y, w, h),
-		color
-	);
-
-	diffY = h - y;
-	diffX = w - x;
-	x = w;
-	w = x + diffX;
-	// DRAW FOURTH BOX
-	TGraphics::DrawStrokedRect(
-		hdc,
-		w32::GetRect(x, y, w, h),
-		color
-	);
-}
-

@@ -296,6 +296,9 @@ public:
 	static void DrawStrokedRect(w32::hdc_t, w32::rect_s bounds, w32::colorref_t color = Colors::White, LineStyle lineStyle = SOLID, int lineWidth = 3);
 	static void DrawFilledRect(w32::hdc_t, w32::rect_s bounds, w32::colorref_t color = Colors::White);
 
+	static void DrawStrokedRect2(w32::hdc_t, int x, int y, int w, int h, w32::colorref_t color = Colors::White, LineStyle lineStyle = SOLID, int lineWidth = 3);
+	static void DrawStrokedRect2(w32::hdc_t, w32::rect_s bounds, w32::colorref_t color = Colors::White, LineStyle lineStyle = SOLID, int lineWidth = 3);
+
 	static std::wstring FONT_FAMILY;
 	static int FONT_SIZE;
 	static FontWeight FONT_WEIGHT;

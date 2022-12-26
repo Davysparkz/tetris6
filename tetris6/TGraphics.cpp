@@ -94,4 +94,24 @@ void TGraphics::DrawFilledRect(w32::hdc_t hdc, w32::rect_s bounds, w32::colorref
 	DrawFilledRect(hdc, WIDEN_RECT(bounds), color);
 }
 
+void TGraphics::DrawStrokedRect2(w32::hdc_t hdc, int x, int y, int w, int h, w32::colorref_t color, LineStyle lineStyle, int lineWidth)
+{
+	// top
+	DrawLine(hdc, x, y, x+w, y, color, lineStyle, lineWidth);
+
+	// bottom
+	DrawLine(hdc, x, y+h, x+w, y+h, color, lineStyle, lineWidth);
+
+	// left
+	DrawLine(hdc, x, y, x, y+h, color, lineStyle, lineWidth);
+
+	// right
+	DrawLine(hdc, x+w, y, x+w, y+h, color, lineStyle, lineWidth);
+}
+
+void TGraphics::DrawStrokedRect2(w32::hdc_t hdc, w32::rect_s bounds, w32::colorref_t color, LineStyle lineStyle, int lineWidth)
+{
+	DrawStrokedRect2(hdc, WIDEN_RECT(bounds), color);
+}
+
 

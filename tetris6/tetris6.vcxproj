@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Detris.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameView.h" />
     <ClInclude Include="Resource.h" />
@@ -160,6 +161,7 @@
     <ClInclude Include="w32_types.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Detris.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameView.cpp" />
     <ClCompile Include="stdafx.cpp">

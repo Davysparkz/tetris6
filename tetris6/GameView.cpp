@@ -3,9 +3,21 @@
 #include "GameObject.h"
 #include "TGraphics.h"
 #include "Detris.h"
+#include <random>
+#include <sstream>
+
+uint_t GameView::CellsX[CellXCount];
+uint_t GameView::CellsY[CellYCount];
 
 GameView::GameView()
 {
+	m_detris = nullptr;
+	for (int i = 0; i < CellXCount; i++) {
+		CellsX[i] = i + 1;
+	}
+	for (int i = 0; i < CellYCount; i++) {
+		CellsY[i] = i + 1;
+	}
 }
 
 
@@ -16,7 +28,29 @@ GameView::~GameView()
 void GameView::SetUp()
 {
 	//m_gameObject = std::make_unique<GameObject>(); // using default constructor
-	detris = new Detris(GameboardX, GameboardY, Colors::DarkSalmon);
+	m_detris = new Detris(GameboardX, GameboardY, CellSize, Colors::DarkSalmon);
+
+}
+
+void GameView::SpawnObjects()
+{
+	// (1 ??? ) DELETE THE PREVIOUS DETRIS AND SET TO NULL
+	// (2) ALLOCATE A NEW RANDOM DETRIS
+	w32::colorref_t colors[7] = { Colors::Red, Colors::Green, Colors::Blue,
+	Colors::Yellow, Colors::Purple, Colors::Cyan, Colors::AntiqueWhite };
+
+	std::random_device rd;
+	std::default_random_engine re{ rd() };
+	std::uniform_int_distribution<int> uid(0, 6);
+
+	auto color = colors[uid(re)];
+
+	m_detris = new Detris(
+		GameboardX + (3 * CellSize),
+		GameboardY,
+		CellSize,
+		color
+	);
 }
 
 void GameView::Draw2(w32::hdc_t hdc, w32::rect_s bounds)
@@ -33,8 +67,14 @@ void GameView::Draw2(w32::hdc_t hdc, w32::rect_s bounds)
 		Colors::Orange
 	);
 
-	if (detris) {
-		detris->Draw(hdc);
+	// LOOP THROUGH THE DETRIS VECTOR AND DRAW ALL ITEMS
+	for (auto d : m_detris_vec) {
+		d->Draw(hdc);
+	}
+
+	// DRAW THE CURRENT DETRIS
+	if (m_detris) {
+		m_detris->Draw(hdc);
 	}
 }
 
@@ -43,7 +83,62 @@ void GameView::Update()
 	//if (m_gameObject) {
 
 	//}
+	if (!m_detris) return;
 
+	m_detris->SetXLoc(
+		(m_detris->GetX() / CellSize) + 1
+	);
+
+	m_detris->SetYLoc(
+		((m_detris->GetY() / CellSize) - 2) + 1
+	);
+
+	std::stringstream ssX;
+	ssX << "X Loc: " << m_detris->GetXLoc() << std::endl;
+	OutputDebugStringA(ssX.str().c_str());
+
+	std::stringstream ssY;
+	ssY << "Y Loc: " << m_detris->GetYLoc() << std::endl;
+	OutputDebugStringA(ssY.str().c_str());
+
+	// COLLISION WITH THE TOP OF A DRAWN DETRIS
+	for (auto d : m_detris_vec) {
+		// IF THE CURRENT DETRIS IS FALLING IN THE SAME COLUMN
+		// AS THE DRAWN DETRIS
+		auto cX = m_detris->GetXLoc();
+		auto pX = d->GetXLoc();
+
+		if (cX == pX) {
+			// THEN CHECK FOR COLLISION BETWEEN THE BOTTOM OF THE CURRENT
+			// DETRIS AND THE TOP OF THE DRAWN DETRIS IN THIS COLUMN
+			if (InTop(m_detris, d->GetY())) {
+				// (1) SET ITS TOUCHDOWN FLAG TO TRUE
+				// (2) MAKE IT STAY ONE LEVEL ABOVE THE DRAWN DETRIS IN THE COLUMN
+				// (3) ADD IT TO THE LIST OF ALREADY SPAWNED DETRIS
+				// (4) SPAWN A NEW DETRIS AT THE TOP
+				m_detris->TouchDown(true);
+				m_detris_vec.push_back(m_detris);
+				m_scoreboard_data.totalBlocks = m_detris_vec.size();
+				SpawnObjects();
+
+				return;
+			}
+		}
+	}
+	// COLLISION WITH THE BOTTOM OF THE GAME AREA
+	if (!InTop(m_detris, GameboardH)) {
+		m_detris->MoveDown();
+	}
+	else
+	{
+		// (1) PREVENT DETRIS FROM MOVING ANY FURTHER
+		// (2) ADD THIS DETRIS TO THE LIST OF TOUCHED DOWN DETRIS
+		// (3 - OPTIONAL) SPAWN A NEW DETRIS AT THE TOP
+		m_detris->TouchDown(true);
+		m_detris_vec.push_back(m_detris);
+		m_scoreboard_data.totalBlocks = m_detris_vec.size();
+		SpawnObjects();
+	}
 }
 
 void GameView::OnLeftArrowKey()
@@ -52,10 +147,11 @@ void GameView::OnLeftArrowKey()
 
 	//}
 
-	OutputDebugString(L"GameView::OnLeftArrowKey");
-	if (detris) {
-		if (!InLeft(*detris, GameboardX)) {
-			detris->MoveLeft();
+	OutputDebugString(L"\nGameView::OnLeftArrowKey\n");
+	if (m_detris) {
+		// COLLISION WITH THE LEFT SIDE OF THE GAME AREA
+		if (!InLeft(m_detris, GameboardX)) {
+			m_detris->MoveLeft();
 		}
 	}
 }
@@ -66,9 +162,10 @@ void GameView::OnRightArrowKey()
 
 	//}
 	OutputDebugString(L"\nGameView::OnRightArrowKey\n");
-	if (detris) {
-		if (!InRight(*detris, GameboardW)) {
-			detris->MoveRight();
+	if (m_detris) {
+		// COLLISION WITH THE RIGHT SIDE OF THE GAME AREA
+		if (!InRight(m_detris, GameboardW)) {
+			m_detris->MoveRight();
 		}
 	}
 }
@@ -79,11 +176,65 @@ void GameView::OnDownArrowKey()
 
 	//}
 	OutputDebugString(L"\nGameView::OnDownArrowKey\n");
-	if (detris) {
-		if (!InBottom(*detris, GameboardH)) {
-			detris->MoveDown();
+
+
+	if (!m_detris) {
+		return;
+	}
+
+	// IF THE DOWN ARROW IS PRESSED,
+	// (1) LOOP THROUGH ALL THE DRAWN DETRIS
+	// - IF THE CURRENT DETRIS IS ON THE SAME COLUMN AS THE DRAWN
+	//   DETRIS, IT SHOULD DROP ON TOP THE DRAWN DETRIS
+	// (2) IF THERE IS NO DRAWN DETRIS AT THAT COLUMN, THEN
+	//      THE CURRENT DETRIS SHOULD JUST DROP TO THE BOTTOM OF 
+	//      THE GAME AREA.
+
+	// COLLISION WITH THE TOP OF A DRAWN DETRIS
+
+	// GET THE DRAWN DETRIS WITH THE LEAST YLOC
+	uint_t leastY = CellYCount;
+	for (size_t i = 0; i < m_detris_vec.size(); i++) {
+		auto prev = m_detris_vec.at(i);
+		auto next = m_detris_vec.at(i + 1);
+
+		//  SORT ALL DRAWN DETRIS IN ASCENDING ORDER
+		// THE ONE CLOSEST TO THE TOP OF THE SORT SHOULD BE THE ONE
+		//  TO BE TESTED AGAINST.
+		if (prev->GetYLoc() < next->GetYLoc()) {
+			leastY = prev->GetYLoc();
 		}
 	}
+
+	for (auto d : m_detris_vec) {
+
+		// IF THE CURRENT DETRIS IS FALLING IN THE SAME COLUMN
+		// AS THE DRAWN DETRIS
+		auto cX = m_detris->GetXLoc();
+		auto pX = d->GetXLoc();
+
+		if (cX == pX) {
+			m_detris->SetYLoc(leastY - 1);
+			m_detris->SetY(d->GetY() - CellSize);
+			m_detris->TouchDown(true);
+			m_detris_vec.push_back(m_detris);
+			m_scoreboard_data.totalBlocks = m_detris_vec.size();
+			SpawnObjects();
+			return;
+		}
+	}
+
+
+
+	// COLLISION WITH THE BOTTOM OF THE GAME AREA
+	m_detris->SetYLoc(
+		CellsY[CellYCount-1]
+	);
+	m_detris->SetY(GameboardH - CellSize);
+	m_detris->TouchDown(true);
+	m_detris_vec.push_back(m_detris);
+	m_scoreboard_data.totalBlocks = m_detris_vec.size();
+	SpawnObjects();
 }
 
 void GameView::OnCharKey()
@@ -112,9 +263,12 @@ void GameView::DrawScoreBoard(w32::hdc_t hdc, w32::rect_s bounds, w32::colorref_
 	w = x + 120;
 	y = bounds.top + m;
 	h = y + 20;
+
+	std::stringstream totalScore;
+	totalScore << "Total Score: " << m_scoreboard_data.totalScore;
 	TGraphics::WriteTextA(
 		hdc,
-		"Total Score: 0000",
+		totalScore.str(),
 		w32::GetRect(x, y, w, h)
 	);
 	TGraphics::DrawStrokedRect(
@@ -131,9 +285,12 @@ void GameView::DrawScoreBoard(w32::hdc_t hdc, w32::rect_s bounds, w32::colorref_
 	y = h + m;
 	h = y + 20;
 	// WRITE TOTAL TETRIMINO ON SCREEN
+	std::stringstream totalBlocks;
+	totalBlocks << "Total Blocks: " << m_scoreboard_data.totalBlocks;
+
 	TGraphics::WriteTextA(
 		hdc,
-		"Total Blocks: 0",
+		totalBlocks.str(),
 		w32::GetRect(x, y, w, h)
 	);
 	TGraphics::DrawStrokedRect(

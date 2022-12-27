@@ -33,6 +33,7 @@ namespace w32 {
 	using rect_s = RECT;
 	using logbrush_s = LOGBRUSH;
 	using minmaxinfo_s = MINMAXINFO;
+	using hbitmap_s = HBITMAP;
 
 #define WIDEN_RECT(r) r.left, r.top, r.right, r.bottom
 

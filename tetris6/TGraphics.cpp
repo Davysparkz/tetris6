@@ -18,16 +18,17 @@ TGraphics::~TGraphics()
 
 void TGraphics::DrawLine(w32::hdc_t hdc, int x1, int y1, int x2, int y2, w32::colorref_t color, LineStyle lineStyle, int lineWidth)
 {
-	auto oldPen = SelectObject(hdc, CreatePen(lineStyle, lineWidth, color));
+	auto pen = CreatePen(lineStyle, lineWidth, color);
+	auto oldPen = SelectObject(hdc, pen);
 	MoveToEx(hdc, x1, y1, nullptr);
 	LineTo(hdc, x2, y2);
 	SelectObject(hdc, oldPen);
+	DeleteObject(pen);
 }
 void TGraphics::WriteTextW(w32::hdc_t hdc, std::wstring text, w32::rect_s bounds, w32::colorref_t color, int fontSize, TextAlign textAlign, std::wstring fontFamily)
 {
-	auto oldFont = SelectObject(hdc,
-		CreateFontW(fontSize, 0, 0, 0, FONT_WEIGHT, FALSE, FALSE, FALSE, 0, 0, 0, 0, 0, fontFamily.c_str())
-	);
+	auto font = CreateFontW(fontSize, 0, 0, 0, FONT_WEIGHT, FALSE, FALSE, FALSE, 0, 0, 0, 0, 0, fontFamily.c_str());
+	auto oldFont = SelectObject(hdc, font);
 	SetBkMode(hdc, TRANSPARENT);
 
 	auto oldColor = SetTextColor(hdc, color);
@@ -36,12 +37,12 @@ void TGraphics::WriteTextW(w32::hdc_t hdc, std::wstring text, w32::rect_s bounds
 
 	SetTextColor(hdc, oldColor);
 	SelectObject(hdc, oldFont);
+	DeleteObject(font);
 }
 void TGraphics::WriteTextA(w32::hdc_t hdc, std::string text, w32::rect_s bounds, w32::colorref_t color, int fontSize, TextAlign textAlign, std::wstring fontFamily)
 {
-	auto oldFont = SelectObject(hdc,
-		CreateFontW(fontSize, 0, 0, 0, FONT_WEIGHT, FALSE, FALSE, FALSE, 0, 0, 0, 0, 0, fontFamily.c_str())
-	);
+	auto font = CreateFontW(fontSize, 0, 0, 0, FONT_WEIGHT, FALSE, FALSE, FALSE, 0, 0, 0, 0, 0, fontFamily.c_str());
+	auto oldFont = SelectObject(hdc, font);
 	SetBkMode(hdc, TRANSPARENT);
 
 	auto oldColor = SetTextColor(hdc, color);
@@ -50,6 +51,7 @@ void TGraphics::WriteTextA(w32::hdc_t hdc, std::string text, w32::rect_s bounds,
 
 	SetTextColor(hdc, oldColor);
 	SelectObject(hdc, oldFont);
+	DeleteObject(font);
 }
 
 void TGraphics::WriteTextW(w32::hdc_t hdc, std::wstring text, w32::rect_s bounds, TextProps tp)
@@ -79,9 +81,11 @@ void TGraphics::DrawStrokedRect(w32::hdc_t hdc, int x, int y, int w, int h, w32:
 
 void TGraphics::DrawFilledRect(w32::hdc_t hdc, int x, int y, int w, int h, w32::colorref_t color)
 {
-	auto oldBrush = SelectObject(hdc, CreateSolidBrush(color));
+	auto brush = CreateSolidBrush(color);
+	auto oldBrush = SelectObject(hdc, brush);
 	Rectangle(hdc, x, y, w, h);
 	SelectObject(hdc, oldBrush);
+	DeleteObject(brush);
 }
 
 void TGraphics::DrawStrokedRect(w32::hdc_t hdc, w32::rect_s bounds, w32::colorref_t color, LineStyle lineStyle, int lineWidth)

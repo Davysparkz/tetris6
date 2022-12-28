@@ -4,6 +4,7 @@ namespace w32 {
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers
 	// Windows Header Files
 #include <windows.h>
+#include <windowsx.h> // EXTENDED WINDOWS HEADER
 
 	// OPAQUE types
 	using hinstance_t = HINSTANCE;
@@ -23,6 +24,8 @@ namespace w32 {
 	using hgdiobj_t = HGDIOBJ;
 	using dword_t = DWORD;
 	using long_t = LONG;
+	using ulonglong_t = ULONGLONG;
+	using longptr_t = LONG_PTR;
 
 	// STRUCTS
 	using msg_s = MSG;
@@ -34,6 +37,8 @@ namespace w32 {
 	using logbrush_s = LOGBRUSH;
 	using minmaxinfo_s = MINMAXINFO;
 	using hbitmap_s = HBITMAP;
+	using largeinteger_s = LARGE_INTEGER;
+	using lpcreatestruct_s = LPCREATESTRUCT;
 
 #define WIDEN_RECT(r) r.left, r.top, r.right, r.bottom
 

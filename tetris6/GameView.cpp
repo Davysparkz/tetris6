@@ -5,9 +5,12 @@
 #include "Detris.h"
 #include <random>
 #include <sstream>
+#include <algorithm>
+#include <functional>
 
 uint_t GameView::CellsX[CellXCount];
 uint_t GameView::CellsY[CellYCount];
+float GameView::StepFactor = 5.f; // TODO: THIS STEP FACTOR IS GIVING A HEADACHE
 
 GameView::GameView()
 {
@@ -28,7 +31,18 @@ GameView::~GameView()
 void GameView::SetUp()
 {
 	//m_gameObject = std::make_unique<GameObject>(); // using default constructor
-	m_detris = new Detris(GameboardX, GameboardY, CellSize, Colors::DarkSalmon);
+
+	std::random_device rd;
+	std::default_random_engine re{ rd() };
+	std::uniform_int_distribution<int> uid_loc(0, CellXCount-1);
+
+	auto loc = uid_loc(re);
+
+	m_detris = new Detris(
+		GameboardX + (loc * CellSize),
+		GameboardY,
+		CellSize,
+		Colors::DarkSalmon);
 
 }
 
@@ -41,12 +55,14 @@ void GameView::SpawnObjects()
 
 	std::random_device rd;
 	std::default_random_engine re{ rd() };
-	std::uniform_int_distribution<int> uid(0, 6);
+	std::uniform_int_distribution<int> uid_col(0, 6);
+	std::uniform_int_distribution<int> uid_loc(0, CellXCount-1);
 
-	auto color = colors[uid(re)];
+	auto color = colors[uid_col(re)];
+	auto loc = uid_loc(re);
 
 	m_detris = new Detris(
-		GameboardX + (3 * CellSize),
+		GameboardX + (loc * CellSize),
 		GameboardY,
 		CellSize,
 		color
@@ -85,6 +101,22 @@ void GameView::Update()
 	//}
 	if (!m_detris) return;
 
+	// IF A SPECIFIED AMOUNT OF TIME HAS PASSED (SAY 700ms),
+	// THEN RUN THE CODE BELOW
+	//static float prev_time = 0;
+	//std::stringstream ss;
+
+	//auto diff = (int)m_timer.TotalTime() - prev_time;
+
+	//if (diff > prev_time) {
+	//	// TODO: RUN GAME CODE EVERY SECOND
+
+	//	std::stringstream ss;
+	//	ss << "DIFF TIME: " << m_timer.TotalTime() << std::endl;
+	//	OutputDebugStringA(ss.str().c_str());
+	//}
+	//prev_time = diff;
+
 	m_detris->SetXLoc(
 		(m_detris->GetX() / CellSize) + 1
 	);
@@ -102,29 +134,51 @@ void GameView::Update()
 	OutputDebugStringA(ssY.str().c_str());
 
 	// COLLISION WITH THE TOP OF A DRAWN DETRIS
-	for (auto d : m_detris_vec) {
+	//for (auto d : m_detris_vec) {
+	//	// IF THE CURRENT DETRIS IS FALLING IN THE SAME COLUMN
+	//	// AS THE DRAWN DETRIS
+	//	auto cX = m_detris->GetXLoc();
+	//	auto pX = d->GetXLoc();
+
+	//	if (cX == pX) {
+	//		// THEN CHECK FOR COLLISION BETWEEN THE BOTTOM OF THE CURRENT
+	//		// DETRIS AND THE TOP OF THE DRAWN DETRIS IN THIS COLUMN
+	//		if (InTop(m_detris, d->GetY())) {
+	//			// (1) SET ITS TOUCHDOWN FLAG TO TRUE
+	//			// (2) MAKE IT STAY ONE LEVEL ABOVE THE DRAWN DETRIS IN THE COLUMN
+	//			// (3) ADD IT TO THE LIST OF ALREADY SPAWNED DETRIS
+	//			// (4) SPAWN A NEW DETRIS AT THE TOP
+	//			m_detris->TouchDown(true);
+	//			m_detris_vec.push_back(m_detris);
+	//			m_detris_map_x_loc[m_detris->GetXLoc()] = m_detris;
+	//			m_scoreboard_data.totalBlocks = m_detris_vec.size();
+	//			SpawnObjects();
+
+	//			return;
+	//		}
+	//	}
+	//}
+
+	if (m_detris_map_x_loc.find(m_detris->GetXLoc()) != m_detris_map_x_loc.end()) {
+		auto d = m_detris_map_x_loc[m_detris->GetXLoc()];
 		// IF THE CURRENT DETRIS IS FALLING IN THE SAME COLUMN
 		// AS THE DRAWN DETRIS
-		auto cX = m_detris->GetXLoc();
-		auto pX = d->GetXLoc();
-
-		if (cX == pX) {
-			// THEN CHECK FOR COLLISION BETWEEN THE BOTTOM OF THE CURRENT
-			// DETRIS AND THE TOP OF THE DRAWN DETRIS IN THIS COLUMN
-			if (InTop(m_detris, d->GetY())) {
-				// (1) SET ITS TOUCHDOWN FLAG TO TRUE
-				// (2) MAKE IT STAY ONE LEVEL ABOVE THE DRAWN DETRIS IN THE COLUMN
-				// (3) ADD IT TO THE LIST OF ALREADY SPAWNED DETRIS
-				// (4) SPAWN A NEW DETRIS AT THE TOP
-				m_detris->TouchDown(true);
-				m_detris_vec.push_back(m_detris);
-				m_scoreboard_data.totalBlocks = m_detris_vec.size();
-				SpawnObjects();
-
-				return;
-			}
+		// THEN CHECK FOR COLLISION BETWEEN THE BOTTOM OF THE CURRENT
+		// DETRIS AND THE TOP OF THE DRAWN DETRIS IN THIS COLUMN
+		if (InTop(m_detris, d->GetY())) {
+			// (1) SET ITS TOUCHDOWN FLAG TO TRUE
+			// (2) MAKE IT STAY ONE LEVEL ABOVE THE DRAWN DETRIS IN THE COLUMN
+			// (3) ADD IT TO THE LIST OF ALREADY SPAWNED DETRIS
+			// (4) SPAWN A NEW DETRIS AT THE TOP
+			m_detris->TouchDown(true);
+			m_detris_vec.push_back(m_detris);
+			m_detris_map_x_loc[m_detris->GetXLoc()] = m_detris;
+			m_scoreboard_data.totalBlocks = m_detris_vec.size();
+			SpawnObjects();
+			return;
 		}
 	}
+
 	// COLLISION WITH THE BOTTOM OF THE GAME AREA
 	if (!InTop(m_detris, GameboardH)) {
 		m_detris->MoveDown();
@@ -136,6 +190,7 @@ void GameView::Update()
 		// (3 - OPTIONAL) SPAWN A NEW DETRIS AT THE TOP
 		m_detris->TouchDown(true);
 		m_detris_vec.push_back(m_detris);
+		m_detris_map_x_loc[m_detris->GetXLoc()] = m_detris;
 		m_scoreboard_data.totalBlocks = m_detris_vec.size();
 		SpawnObjects();
 	}
@@ -194,47 +249,93 @@ void GameView::OnDownArrowKey()
 
 	// GET THE DRAWN DETRIS WITH THE LEAST YLOC
 	uint_t leastY = CellYCount;
-	for (size_t i = 0; i < m_detris_vec.size(); i++) {
-		auto prev = m_detris_vec.at(i);
-		auto next = m_detris_vec.at(i + 1);
+	//for (size_t i = 0; i < m_detris_vec.size(); i++) {
+	//	auto prev = m_detris_vec.at(i);
+	//	if (i + 1 == m_detris_vec.size()) { break; }
+	//	auto next = m_detris_vec.at(i + 1);
 
-		//  SORT ALL DRAWN DETRIS IN ASCENDING ORDER
-		// THE ONE CLOSEST TO THE TOP OF THE SORT SHOULD BE THE ONE
-		//  TO BE TESTED AGAINST.
-		if (prev->GetYLoc() < next->GetYLoc()) {
-			leastY = prev->GetYLoc();
-		}
+	//	//  SORT ALL DRAWN DETRIS IN ASCENDING ORDER
+	//	// THE ONE CLOSEST TO THE TOP OF THE SORT SHOULD BE THE ONE
+	//	//  TO BE TESTED AGAINST.
+	//	if (prev->GetYLoc() < next->GetYLoc()) {
+	//		leastY = prev->GetYLoc();
+	//	}
+	//}
+
+	// WHAT IS SUPPOSED TO BE DONE HERE IS, EVERY COLUMN SHOULD
+	// HAVE THEIR DETRIS IN THAT LOCATION
+	// IN ESSENCE, THERE SHOULD BE A LIST FOR EACH COLUMN WHERE EACH
+	// COLUMN HAS ITS DETRIS'
+	if (m_map_of_columns.find(m_detris->GetXLoc()) != m_map_of_columns.end()) {
+		std::sort(
+			m_map_of_columns[m_detris->GetXLoc()].begin(),
+			m_map_of_columns[m_detris->GetXLoc()].end(),
+			[](Detris* a, Detris* b) {
+			return a->GetYLoc() < b->GetYLoc();
+		});
+		leastY = m_map_of_columns[m_detris->GetXLoc()][0]->GetYLoc();
 	}
 
-	for (auto d : m_detris_vec) {
 
+
+	//for (auto d : m_detris_vec) {
+	//	// IF THE CURRENT DETRIS IS FALLING IN THE SAME COLUMN
+	//	// AS THE DRAWN DETRIS
+	//	auto cX = m_detris->GetXLoc();
+	//	auto pX = d->GetXLoc();
+
+	//	if (cX == pX) {
+	//		m_detris->SetYLoc(leastY - 1);
+	//		m_detris->SetY(d->GetY() - CellSize);
+	//		m_detris->TouchDown(true);
+	//		m_detris_vec.push_back(m_detris);
+	//		m_detris_map_x_loc[m_detris->GetXLoc()] = m_detris;
+	//		m_scoreboard_data.totalBlocks = m_detris_vec.size();
+	//		SpawnObjects();
+	//	}
+	//}
+	if (m_detris_map_x_loc.find(m_detris->GetXLoc()) != m_detris_map_x_loc.end()) {
 		// IF THE CURRENT DETRIS IS FALLING IN THE SAME COLUMN
-		// AS THE DRAWN DETRIS
-		auto cX = m_detris->GetXLoc();
-		auto pX = d->GetXLoc();
+		//	 AS THE DRAWN DETRIS
+		auto d = m_detris_map_x_loc[m_detris->GetXLoc()];
+		m_detris->SetYLoc(leastY - 1);
+		m_detris->SetY(d->GetY() - CellSize);
+		m_detris->TouchDown(true);
+		m_detris_vec.push_back(m_detris);
+		m_detris_map_x_loc[m_detris->GetXLoc()] = m_detris;
 
-		if (cX == pX) {
-			m_detris->SetYLoc(leastY - 1);
-			m_detris->SetY(d->GetY() - CellSize);
-			m_detris->TouchDown(true);
-			m_detris_vec.push_back(m_detris);
-			m_scoreboard_data.totalBlocks = m_detris_vec.size();
-			SpawnObjects();
-			return;
-		}
+		std::vector<Detris*> dvec;
+		std::for_each(m_detris_map_x_loc.begin(), m_detris_map_x_loc.end(), [&](std::pair<uint_t, Detris*> item) {
+			if (item.first == m_detris->GetXLoc()) {
+				dvec.push_back(item.second);
+			}
+		});
+		m_map_of_columns[m_detris->GetXLoc()] = dvec;
+		m_scoreboard_data.totalBlocks = m_detris_vec.size();
+		SpawnObjects();
 	}
+	else {
 
+		// COLLISION WITH THE BOTTOM OF THE GAME AREA
+		m_detris->SetYLoc(
+			CellsY[CellYCount - 1]
+		);
+		m_detris->SetY(GameboardH - CellSize);
+		m_detris->TouchDown(true);
+		m_detris_vec.push_back(m_detris);
+		m_detris_map_x_loc[m_detris->GetXLoc()] = m_detris;
 
+		std::vector<Detris*> dvec;
+		std::for_each(m_detris_map_x_loc.begin(), m_detris_map_x_loc.end(), [&](std::pair<uint_t, Detris*> item) {
+			if (item.first == m_detris->GetXLoc()) {
+				dvec.push_back(item.second);
+			}
+		});
+		m_map_of_columns[m_detris->GetXLoc()] = dvec;
 
-	// COLLISION WITH THE BOTTOM OF THE GAME AREA
-	m_detris->SetYLoc(
-		CellsY[CellYCount-1]
-	);
-	m_detris->SetY(GameboardH - CellSize);
-	m_detris->TouchDown(true);
-	m_detris_vec.push_back(m_detris);
-	m_scoreboard_data.totalBlocks = m_detris_vec.size();
-	SpawnObjects();
+		m_scoreboard_data.totalBlocks = m_detris_vec.size();
+		SpawnObjects();
+	}
 }
 
 void GameView::OnCharKey()
@@ -250,6 +351,38 @@ void GameView::CleanUp()
 	//if (m_gameObject) {
 
 	//}
+}
+
+void GameView::ResetTimer()
+{
+	this->m_timer.Reset();
+}
+
+void GameView::Tick()
+{
+	this->m_timer.Tick();
+}
+
+void GameView::StopTimer()
+{
+	m_timer.Stop();
+}
+
+bool GameView::IsRunning()
+{
+	return !this->m_paused;
+}
+
+void GameView::Suspend()
+{
+	m_paused = true;
+	m_timer.Stop();
+}
+
+void GameView::Resume()
+{
+	m_paused = false;
+	m_timer.Start();
 }
 
 void GameView::DrawScoreBoard(w32::hdc_t hdc, w32::rect_s bounds, w32::colorref_t color)

@@ -20,22 +20,19 @@ Detris::~Detris()
 void Detris::MoveLeft()
 {
 	if (this->touched_down) return;
-	this->cell.X -= this->cell.Size;
-	this->cell.LocX = this->cell.X / this->cell.Size;
+	this->cell.X -= (this->cell.Size);
 }
 
 void Detris::MoveRight()
 {
 	if (this->touched_down) return;
-	this->cell.X += this->cell.Size;
-	this->cell.LocX = this->cell.X / this->cell.Size;
+	this->cell.X += (this->cell.Size);
 }
 
 void Detris::MoveDown()
 {
 	if (this->touched_down) return;
-	this->cell.Y += this->cell.Size;
-	this->cell.LocY = (this->cell.Y / this->cell.Size) - 3;
+	this->cell.Y += (this->cell.Size);
 }
 
 bool Detris::TouchedDown() {

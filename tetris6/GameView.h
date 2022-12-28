@@ -4,6 +4,8 @@
 #include "Detris.h"
 #include <vector>
 #include <string>
+#include <map>
+#include "TTimer.h"
 //class GameObject;
 
 class GameView
@@ -33,6 +35,14 @@ public:
 
 	void CleanUp();
 
+	void ResetTimer();
+	void Tick();
+	void StopTimer();
+	bool IsRunning();
+
+	void Suspend();
+	void Resume();
+
 public:
 	enum Props {
 		Margin  = 20,
@@ -57,6 +67,9 @@ private:
 	void DrawGameBoard(w32::hdc_t hdc, w32::rect_s bounds, w32::colorref_t color);
 	void DrawMenu(w32::hdc_t hdc, w32::rect_s bounds);
 
+private:
+	bool m_paused{ false };
+	bool m_minimized{ false };
 private: 
 	//std::unique_ptr<GameObject> m_gameObject;
 	// THE CURRENT DETRIS IN MOTION
@@ -64,10 +77,16 @@ private:
 
 	// THE LIST OF DETRIS ALREADY TOUCHED DOWN
 	std::vector<Detris*> m_detris_vec;
+	std::map<uint_t, Detris*> m_detris_map_x_loc;
+	std::map<uint_t, std::vector<Detris*>> m_map_of_columns;
 
 	ScoreboardData m_scoreboard_data;
 	// THE CELL LOCATIONS OF THE ENTIRE GAMEBOARD.
 	static uint_t CellsX[CellXCount];
 	static uint_t CellsY[CellYCount];
+	
+	static float StepFactor;
+
+	TTimer m_timer;
 };
 

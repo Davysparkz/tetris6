@@ -86,7 +86,7 @@ void GameView::SpawnObjects()
 	auto color = colors[uid_col(re)];
 	auto loc = uid_loc(re);
 
-	loc = 1;
+	//loc = 1;
 
 	m_detris = new Detris(
 		GameboardX + (loc * CellSize),

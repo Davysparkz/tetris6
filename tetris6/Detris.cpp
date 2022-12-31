@@ -53,13 +53,20 @@ uint_t Detris::GetYLoc()
 	return this->cell.LocY;
 }
 
+#include <sstream>
 void Detris::SetXLoc(uint_t xLoc)
 {
+	std::stringstream ss;
+	ss << "XLOC: " << xLoc << "\n";
+	OutputDebugStringA(ss.str().c_str());
 	this->cell.LocX = xLoc;
 }
 
 void Detris::SetYLoc(uint_t yLoc)
 {
+	//std::stringstream ss;
+	//ss << "YLOC: " << yLoc << "\n";
+	//OutputDebugStringA(ss.str().c_str());
 	this->cell.LocY = yLoc;
 }
 

@@ -5,8 +5,6 @@
 #include <vector>
 #include <string>
 #include <map>
-#include "TTimer.h"
-//class GameObject;
 
 class GameView
 {
@@ -19,9 +17,7 @@ public:
 	GameView();
 	~GameView();
 
-	void SetUp();
-
-	void SpawnObjects();
+	void SetUp(w32::hwnd_t hWnd);
 
 	//void Draw(w32::hwnd_t hWnd, w32::rect_s bounds);
 	void Draw2(w32::hdc_t hdc, w32::rect_s bounds);
@@ -35,58 +31,76 @@ public:
 
 	void CleanUp();
 
-	void ResetTimer();
-	void Tick();
-	void StopTimer();
 	bool IsRunning();
+	bool IsGameOver();
 
 	void Suspend();
 	void Resume();
+	
+	void ShowMenu();
 
 public:
 	enum Props {
-		Margin  = 20,
+		Margin = 20,
 		CellSize = 44,
 
 		CellXCount = 10,
 		CellYCount = 12,
 
-		ScoreboardX = Margin, 
-		ScoreboardY = Margin, 
-		ScoreboardH = 4*Margin,
+		ScoreboardX = Margin,
+		ScoreboardY = Margin,
+		ScoreboardH = 4 * Margin,
 		ScoreboardW = ScoreboardX + CellXCount * CellSize,
 
 		GameboardX = Margin,
 		GameboardY = ScoreboardH + Margin,
 		GameboardH = GameboardY + CellYCount * CellSize,
 		GameboardW = GameboardX + CellXCount * CellSize,
+
+		FirstRow = 1,
+		LastRow = 11,
+		FirstCol = 0,
+		LastCol = 9,
 	};
 
 private:
 	void DrawScoreBoard(w32::hdc_t hdc, w32::rect_s bounds, w32::colorref_t color);
 	void DrawGameBoard(w32::hdc_t hdc, w32::rect_s bounds, w32::colorref_t color);
 	void DrawMenu(w32::hdc_t hdc, w32::rect_s bounds);
-
+	void Stats();
+	void SpawnObjects();
+	void ResolveObjects();
+	void CheckGameOver();
+	//bool CanAddScores();
 private:
 	bool m_paused{ false };
 	bool m_minimized{ false };
+	bool m_gameover{ false };
 private: 
-	//std::unique_ptr<GameObject> m_gameObject;
 	// THE CURRENT DETRIS IN MOTION
 	Detris *m_detris; 
 
 	// THE LIST OF DETRIS ALREADY TOUCHED DOWN
-	std::vector<Detris*> m_detris_vec;
-	std::map<uint_t, Detris*> m_detris_map_x_loc;
+	std::vector<Detris*> m_drawable_items;
+
+	// key = XLOC
+	// value = THE CURRENT DETRIS IN XLOC
+	std::map<uint_t, Detris*> m_map_of_xloc;
+	// key = YLOC
+	// value = THE CURRENT DETRIS IN YLOC
+	std::map<uint_t, Detris*> m_map_of_yloc;
+	// key = XLOC
+	// value = THE LIST OF DETRIS IN COLUMN XLOC
 	std::map<uint_t, std::vector<Detris*>> m_map_of_columns;
+	// key = YLOC
+	// value = THE LIST OF DETRIS IN ROW YLOC
+	std::map<uint_t, std::vector<Detris*>> m_map_of_rows;
 
 	ScoreboardData m_scoreboard_data;
-	// THE CELL LOCATIONS OF THE ENTIRE GAMEBOARD.
-	static uint_t CellsX[CellXCount];
-	static uint_t CellsY[CellYCount];
-	
-	static float StepFactor;
 
-	TTimer m_timer;
+	static uint_t TIMER_ID;
+	static uint_t TIMER_TIME;
+
+	hwnd_t m_hwnd;
 };
 

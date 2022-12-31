@@ -12,25 +12,25 @@ TInput::~TInput()
 }
 
 void TInput::KeyUp(std::function<void()> cb) {
-	OutputDebugString(L"KEYUP\n");
+//	OutputDebugString(L"KEYUP\n");
 	if (cb) {
 		cb();
 	}
 }
 void TInput::KeyDown(std::function<void()> cb) {
-	OutputDebugString(L"KEYDOWN\n");
+//	OutputDebugString(L"KEYDOWN\n");
 	if (cb) {
 		cb();
 	}
 }
 void TInput::KeyRight(std::function<void()> cb) {
-	OutputDebugString(L"KEYRIGHT\n");
+	//OutputDebugString(L"KEYRIGHT\n");
 	if (cb) {
 		cb();
 	}
 }
 void TInput::KeyLeft(std::function<void()> cb) {
-	OutputDebugString(L"KEYLEFT\n");
+	//OutputDebugString(L"KEYLEFT\n");
 	if (cb) {
 		cb();
 	}

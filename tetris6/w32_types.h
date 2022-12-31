@@ -39,6 +39,7 @@ namespace w32 {
 	using hbitmap_s = HBITMAP;
 	using largeinteger_s = LARGE_INTEGER;
 	using lpcreatestruct_s = LPCREATESTRUCT;
+	using point_s = POINT;
 
 #define WIDEN_RECT(r) r.left, r.top, r.right, r.bottom
 
